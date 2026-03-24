@@ -651,6 +651,12 @@ export async function main(args: string[]) {
 	const agentDir = getAgentDir();
 	const settingsManager = SettingsManager.create(cwd, agentDir);
 	reportSettingsErrors(settingsManager, "startup");
+
+	// Propagate stealth setting to env before AI providers read it
+	if (settingsManager.getClaudeCodeStealth()) {
+		process.env.PI_CLAUDE_CODE_STEALTH = "1";
+	}
+
 	const authStorage = AuthStorage.create();
 	const modelRegistry = new ModelRegistry(authStorage, getModelsPath());
 

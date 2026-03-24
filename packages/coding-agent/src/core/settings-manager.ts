@@ -94,6 +94,7 @@ export interface Settings {
 	autocompleteMaxVisible?: number; // Max visible items in autocomplete dropdown (default: 5)
 	showHardwareCursor?: boolean; // Show terminal cursor while still positioning it for IME
 	markdown?: MarkdownSettings;
+	claudeCodeStealth?: boolean; // Apply Claude Code identity headers with API key auth (sets PI_CLAUDE_CODE_STEALTH=1)
 }
 
 /** Deep merge settings: project/overrides take precedence, nested objects merge recursively */
@@ -949,5 +950,9 @@ export class SettingsManager {
 
 	getCodeBlockIndent(): string {
 		return this.settings.markdown?.codeBlockIndent ?? "  ";
+	}
+
+	getClaudeCodeStealth(): boolean {
+		return this.settings.claudeCodeStealth ?? false;
 	}
 }
