@@ -110,6 +110,7 @@ export interface Settings {
 	markdown?: MarkdownSettings;
 	warnings?: WarningSettings;
 	sessionDir?: string; // Custom session storage directory (same format as --session-dir CLI flag)
+	claudeCodeStealth?: boolean; // Apply Claude Code identity headers with API key auth (sets PI_CLAUDE_CODE_STEALTH=1)
 }
 
 /** Deep merge settings: project/overrides take precedence, nested objects merge recursively */
@@ -1063,5 +1064,9 @@ export class SettingsManager {
 		this.globalSettings.warnings = { ...warnings };
 		this.markModified("warnings");
 		this.save();
+	}
+
+	getClaudeCodeStealth(): boolean {
+		return this.settings.claudeCodeStealth ?? false;
 	}
 }

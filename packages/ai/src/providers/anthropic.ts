@@ -762,6 +762,13 @@ function isOAuthToken(apiKey: string): boolean {
 	return apiKey.includes("sk-ant-oat");
 }
 
+/**
+ * When true, apply Claude Code identity (headers, system prompt, tool name
+ * remapping) even for plain API key auth.  Enabled via the environment
+ * variable `PI_CLAUDE_CODE_STEALTH=1`.
+ */
+const stealthMode = typeof process !== "undefined" && process.env.PI_CLAUDE_CODE_STEALTH === "1";
+
 function createClient(
 	model: Model<"anthropic-messages">,
 	apiKey: string,
@@ -849,7 +856,7 @@ function createClient(
 		return { client, isOAuthToken: true };
 	}
 
-	// API key auth
+	// API key auth (with optional Claude Code identity in stealth mode)
 	const client = new Anthropic({
 		apiKey,
 		baseURL: model.baseUrl,
@@ -858,14 +865,24 @@ function createClient(
 			{
 				accept: "application/json",
 				"anthropic-dangerous-direct-browser-access": "true",
-				...(betaFeatures.length > 0 ? { "anthropic-beta": betaFeatures.join(",") } : {}),
+				...(stealthMode
+					? { "anthropic-beta": ["claude-code-20250219", ...betaFeatures].join(",") }
+					: betaFeatures.length > 0
+						? { "anthropic-beta": betaFeatures.join(",") }
+						: {}),
+				...(stealthMode
+					? {
+							"user-agent": `claude-cli/${claudeCodeVersion}`,
+							"x-app": "cli",
+						}
+					: {}),
 			},
 			model.headers,
 			optionsHeaders,
 		),
 	});
 
-	return { client, isOAuthToken: false };
+	return { client, isOAuthToken: stealthMode };
 }
 
 function buildParams(

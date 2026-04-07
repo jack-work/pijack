@@ -488,6 +488,11 @@ export async function main(args: string[], options?: MainOptions) {
 	const startupSettingsManager = SettingsManager.create(cwd, agentDir);
 	reportDiagnostics(collectSettingsDiagnostics(startupSettingsManager, "startup session lookup"));
 
+	// Propagate stealth setting to env before AI providers read it
+	if (startupSettingsManager.getClaudeCodeStealth()) {
+		process.env.PI_CLAUDE_CODE_STEALTH = "1";
+	}
+
 	// Decide the final runtime cwd before creating cwd-bound runtime services.
 	// --session and --resume may select a session from another project, so project-local
 	// settings, resources, provider registrations, and models must be resolved only after
