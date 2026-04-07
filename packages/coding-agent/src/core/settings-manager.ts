@@ -95,6 +95,7 @@ export interface Settings {
 	showHardwareCursor?: boolean; // Show terminal cursor while still positioning it for IME
 	markdown?: MarkdownSettings;
 	sessionDir?: string; // Custom session storage directory (same format as --session-dir CLI flag)
+	claudeCodeStealth?: boolean; // Apply Claude Code identity headers with API key auth (sets PI_CLAUDE_CODE_STEALTH=1)
 }
 
 /** Deep merge settings: project/overrides take precedence, nested objects merge recursively */
@@ -955,5 +956,9 @@ export class SettingsManager {
 
 	getCodeBlockIndent(): string {
 		return this.settings.markdown?.codeBlockIndent ?? "  ";
+	}
+
+	getClaudeCodeStealth(): boolean {
+		return this.settings.claudeCodeStealth ?? false;
 	}
 }
