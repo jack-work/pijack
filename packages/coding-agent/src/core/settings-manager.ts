@@ -126,6 +126,7 @@ export interface Settings {
 	httpProxy?: string; // Proxy URL applied as HTTP_PROXY and HTTPS_PROXY for Pi-managed HTTP clients
 	httpIdleTimeoutMs?: number; // HTTP header/body idle timeout in milliseconds; 0 disables it
 	websocketConnectTimeoutMs?: number; // WebSocket connect/open handshake timeout in milliseconds; 0 disables it
+	claudeCodeStealth?: boolean; // Apply Claude Code identity headers with API key auth (sets PI_CLAUDE_CODE_STEALTH=1)
 }
 
 /** Deep merge settings: project/overrides take precedence, nested objects merge recursively */
@@ -1230,5 +1231,9 @@ export class SettingsManager {
 		this.globalSettings.warnings = { ...warnings };
 		this.markModified("warnings");
 		this.save();
+	}
+
+	getClaudeCodeStealth(): boolean {
+		return this.settings.claudeCodeStealth ?? false;
 	}
 }
